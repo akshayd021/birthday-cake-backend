@@ -23,7 +23,7 @@ router.post("/create-user", async (req, res) => {
     const newUser = new User({ name, age, message, customUrl });
     await newUser.save();
 
-    const dummyLink = `http://192.168.29.47:3000/user/${
+    const dummyLink = `https://birthday-cake-sigma.vercel.app/user/${
       customUrl || newUser._id
     }`;
 
