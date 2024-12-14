@@ -1,14 +1,17 @@
 const crypto = require("crypto");
 const axios = require("axios");
+const sha256 = require("sha256");
 // const { , merchant_id } = require("./secret");
-const salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399";
+const salt_key = "96434309-7796-489d-8924-ab56988a6076";
+const merchant_id = "PGTESTPAYUAT86" ;
+const salt_index = 1;
 
 // const newPayment = async (req, res) => {
 //   try {
 //     console.log("Calling req");
 //     const merchantTransactionId = Date.now();
 //     const data = {
-//         "merchantId": "PGTESTPAYUAT",
+//         "merchantId": "PGTESTPAYUAT86",
 //         "merchantTransactionId": "MT7850590068188104",
 //         "merchantUserId": "MUID123",
 //         "amount": 10000,
@@ -72,7 +75,7 @@ const newPayment = async (req, res) => {
   console.log("Calling payment... ");
   const merchantTransactionId = "T" + Date.now();
   const data = {
-    merchantId: "PGTESTPAYUAT",
+    merchantId: merchant_id,
     merchantTransactionId: merchantTransactionId,
     merchantUserId: "MUID" + Date.now(),
     name: "utsav",
@@ -85,12 +88,17 @@ const newPayment = async (req, res) => {
     },
   };
 
-  const payload = JSON.stringify(data);
-  const payloadMain = Buffer.from(payload).toString("base64");
-  const keyIndex = 1;
-  const string = payloadMain + "/pg/v1/pay" + salt_key;
-  const sha256 = crypto.createHash("sha256").update(string).digest("hex");
-  const checksum = sha256 + "###" + keyIndex;
+  // const payload = JSON.stringify(data);
+  // const payloadMain = Buffer.from(payload).toString("base64");
+  // const keyIndex = 1;
+  // const string = payloadMain + "/pg/v1/pay" + salt_key;
+  // const sha256 = crypto.createHash("sha256").update(string).digest("hex");
+  // const checksum = sha256 + "###" + keyIndex;
+
+  const bufferObj = Buffer.from(JSON.stringify(data), "utf8");
+  const encodedPayload = bufferObj.toString("base64");
+  console.log("Base 64: ", encodedPayload);
+  const xVerify = sha256(encodedPayload + "/pg/v1/pay" + salt_key) + "###1";
 
   const prod_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay";
 
@@ -100,10 +108,10 @@ const newPayment = async (req, res) => {
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
-      "X-VERIFY": checksum,
+      "X-VERIFY": xVerify,
     },
     data: {
-      request: payloadMain,
+      request: encodedPayload,
     },
   };
 
@@ -121,23 +129,17 @@ const newPayment = async (req, res) => {
 };
 
 const checkStatus = async (req, res) => {
-  const merchantTransactionId = res.req.body.transactionId;
-  const merchantId = res.req.body.merchantId;
+  const { txnId } = req.params;
 
-  const keyIndex = 1;
-  const string =
-    `/pg/v1/status/${merchantId}/${merchantTransactionId}` + salt_key;
-  const sha256 = crypto.createHash("sha256").update(string).digest("hex");
-  const checksum = sha256 + "###" + keyIndex;
-
+  const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
   const options = {
-    method: "GET",
-    url: `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchantId}/${merchantTransactionId}`,
+    method: 'get',
+    url: `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${merchant_id}/${txnId}`,
     headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
-      "X-VERIFY": checksum,
-      "X-MERCHANT-ID": `${merchantId}`,
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+      "X-MERCHANT-ID": txnId,
+      'X-VERIFY': xVerify
     },
   };
 
