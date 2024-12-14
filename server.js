@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./router/userRouter');
+const phonepeRoute = require('./router/PhonePayRoute');
+
 const cors =  require("cors")
 // Load environment variables
 dotenv.config();
@@ -29,6 +31,7 @@ const PORT = process.env.PORT || 5050;
 
 // Use the user routes
 app.use('/api', userRoutes);
+app.use("/api", phonepeRoute);
 
 // Start the server
 app.listen(PORT, () => {
