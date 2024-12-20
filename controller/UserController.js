@@ -59,4 +59,26 @@ const GetUser = async (req, res) => {
   }
 };
 
-module.exports = { CreateUser, GetUser };
+const CheckCustomUrl = async (req, res) => {
+  try {
+    const { customUrl } = req.params;
+    console.log("Custom url: ", customUrl);
+
+    if (!customUrl) {
+      return res.status(400).json({ error: "Custom URL cannot be empty" });
+    }
+
+    const existingUser = await User.findOne({ customUrl });
+
+    if (existingUser) {
+      return res.status(200).json({ exists: true, message: "Custom URL already taken" });
+    }
+
+    res.status(200).json({ exists: false, message: "Custom URL is available" });
+  } catch (error) {
+    console.error("Error occurred:", error.message);
+    res.status(500).json({ error: "An error occurred while checking the custom URL" });
+  }
+};
+
+module.exports = { CreateUser, GetUser, CheckCustomUrl };

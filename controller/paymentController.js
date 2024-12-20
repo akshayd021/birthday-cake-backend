@@ -72,15 +72,21 @@ const salt_index = 1;
 // };
 
 const newPayment = async (req, res) => {
-  console.log("Calling payment... ");
+  const name = req?.body?.name;
+  const msg = req?.body?.msg;
+  const age = req?.body?.age;
+  const customUrl = req?.body?.customUrl;
+
+  console.log("Calling payment... ", name, msg, age, customUrl);
+
   const merchantTransactionId = "T" + Date.now();
   const data = {
     merchantId: merchant_id,
     merchantTransactionId: merchantTransactionId,
     merchantUserId: "MUID" + Date.now(),
-    name: "utsav",
+    name: req?.body?.name,
     amount: 100,
-    redirectUrl: `http://localhost:8000/api/status/${merchantTransactionId}`,
+    redirectUrl: `http://localhost:8000/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     redirectMode: "POST",
     mobileNumber: "6353839209",
     paymentInstrument: {
@@ -137,7 +143,9 @@ const newPayment = async (req, res) => {
 };
 
 const checkStatus = async (req, res) => {
-  const { txnId } = req.params;
+  const { txnId, name, msg, age, customUrl } = req.params;
+
+  console.log({ txnId, name, msg, age, customUrl });
 
   const xVerify =
     sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) +
@@ -158,7 +166,11 @@ const checkStatus = async (req, res) => {
     .request(options)
     .then(async (response) => {
       if (response.data.success === true) {
-        const url = `http://localhost:3000/success`;
+        const url = `http://localhost:3000/${name}/${msg}/${age}/${customUrl}`;
+        const response = await axios.post(
+          "http://localhost:8000/api/create-user",
+          {name, message: msg, age, customUrl}
+        );
         return res.redirect(url);
       } else {
         const url = `http://localhost:3000/failure`;
