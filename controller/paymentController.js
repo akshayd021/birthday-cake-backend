@@ -86,7 +86,7 @@ const newPayment = async (req, res) => {
     merchantUserId: "MUID" + Date.now(),
     name: req?.body?.name,
     amount: 100,
-    redirectUrl: `http://localhost:8000/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
+    redirectUrl: `https://birthday-cake-backend-1.onrender.com/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     redirectMode: "POST",
     mobileNumber: "6353839209",
     paymentInstrument: {
@@ -166,14 +166,14 @@ const checkStatus = async (req, res) => {
     .request(options)
     .then(async (response) => {
       if (response.data.success === true) {
-        const url = `http://localhost:3000/${name}/${msg}/${age}/${customUrl}`;
+        const url = `https://www.waiwishes.com/${name}/${msg}/${age}/${customUrl}`;
         const response = await axios.post(
-          "http://localhost:8000/api/create-user",
-          {name, message: msg, age, customUrl}
+          "https://birthday-cake-backend-1.onrender.com/api/create-user",
+          { name, message: msg, age, customUrl }
         );
         return res.redirect(url);
       } else {
-        const url = `http://localhost:3000/failure`;
+        const url = `https://www.waiwishes.com/`;
         return res.redirect(url);
       }
     })

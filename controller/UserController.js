@@ -20,11 +20,12 @@ const CreateUser = async (req, res) => {
     const newUser = new User({ name, age, message, customUrl });
     await newUser.save();
 
-    const dummyLink = `https://www.waiwishes.com//user/${
+    const dummyLink = `https://www.waiwishes.com/user/${
       customUrl || newUser._id
     }`;
 
     res.status(201).json({
+      success:"true",
       message: "User created successfully",
       user: newUser,
       dummyLink: dummyLink,
@@ -40,6 +41,8 @@ const GetUser = async (req, res) => {
   try {
     const { identifier } = req.params;
 
+    console.log("users: ", identifier);
+
     let user;
     if (mongoose.Types.ObjectId.isValid(identifier)) {
       user = await User.findById(identifier);
@@ -47,9 +50,12 @@ const GetUser = async (req, res) => {
       user = await User.findOne({ customUrl: identifier });
     }
 
+    console.log("Users: ", user);
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    return res.status(200).json({user});
 
   } catch (error) {
     console.error("Error occurred:", error.message);
