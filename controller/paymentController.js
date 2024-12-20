@@ -3,7 +3,7 @@ const axios = require("axios");
 const sha256 = require("sha256");
 // const { , merchant_id } = require("./secret");
 const salt_key = "96434309-7796-489d-8924-ab56988a6076";
-const merchant_id = "PGTESTPAYUAT86" ;
+const merchant_id = "PGTESTPAYUAT86";
 const salt_index = 1;
 
 // const newPayment = async (req, res) => {
@@ -80,7 +80,7 @@ const newPayment = async (req, res) => {
     merchantUserId: "MUID" + Date.now(),
     name: "utsav",
     amount: 100,
-    redirectUrl: `http://localhost:5050/api/status/${merchantTransactionId}`,
+    redirectUrl: `http://localhost:8000/api/status/${merchantTransactionId}`,
     redirectMode: "POST",
     mobileNumber: "6353839209",
     paymentInstrument: {
@@ -118,28 +118,39 @@ const newPayment = async (req, res) => {
   axios
     .request(options)
     .then(function (response) {
-      console.log(response?.data?.data?.instrumentResponse?.redirectInfo?.url);
-      return res.redirect(
-        response.data.data.instrumentResponse.redirectInfo.url
-      );
+      // Extract the URL from the response
+      const redirectUrl =
+        response?.data?.data?.instrumentResponse?.redirectInfo?.url;
+
+      if (redirectUrl) {
+        // Send the URL to the frontend
+        return res.status(200).json({ redirectUrl });
+      } else {
+        // Handle case where URL is not found
+        return res.status(400).json({ message: "Redirect URL not found" });
+      }
     })
     .catch(function (error) {
       console.error(error);
+      res.status(500).json({ message: "Payment processing failed", error });
     });
 };
 
 const checkStatus = async (req, res) => {
   const { txnId } = req.params;
 
-  const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
+  const xVerify =
+    sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) +
+    "###" +
+    salt_index;
   const options = {
-    method: 'get',
+    method: "get",
     url: `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${merchant_id}/${txnId}`,
     headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json',
+      accept: "application/json",
+      "Content-Type": "application/json",
       "X-MERCHANT-ID": txnId,
-      'X-VERIFY': xVerify
+      "X-VERIFY": xVerify,
     },
   };
 
