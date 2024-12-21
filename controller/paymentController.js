@@ -48,7 +48,7 @@ const newPayment = async (req, res) => {
   const bufferObj = Buffer.from(JSON.stringify(data), "utf8");
   const encodedPayload = bufferObj.toString("base64");
   console.log("Base 64: ", encodedPayload);
-  const xVerify = sha256(encodedPayload + "/pg/v1/pay" + salt_key) + "###1";
+  const xVerify = sha256(encodedPayload + "/pg/v1/pay" + salt_key) + "###" + salt_index;
 
   const options = {
     method: "POST",
