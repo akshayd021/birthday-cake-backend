@@ -103,7 +103,7 @@ const checkStatus = async (req, res) => {
     method: "get",
     url: `${status_URL}/${merchant_id}/${txnId}`,
     headers: {
-      accept: "application/json",
+      accept: "text/plain",
       "Content-Type": "application/json",
       "X-MERCHANT-ID": txnId,
       "X-VERIFY": xVerify,
