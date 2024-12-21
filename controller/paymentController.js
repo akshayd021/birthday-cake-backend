@@ -8,6 +8,8 @@ const sha256 = require("sha256");
 // const salt_index = 1;
 // const prod_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay";
 // const status_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status";
+// const backend_URL = "http://localhost:8000";
+// const frontend_URL = "https://www.waiwishes.com";
 
 // Producttions
 const salt_key = "386318c5-8294-4517-83ae-ebcb2cf18877";
@@ -15,6 +17,8 @@ const merchant_id = "WAIWIONLINE";
 const salt_index = 2;
 const prod_URL = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
 const status_URL = "https://api.phonepe.com/apis/hermes/pg/v1/status";
+const backend_URL = "https://birthday-cake-backend-1.onrender.com";
+const frontend_URL = "https://www.waiwishes.com";
 
 const newPayment = async (req, res) => {
   const name = req?.body?.name;
@@ -32,7 +36,7 @@ const newPayment = async (req, res) => {
     merchantUserId: "MUID" + Date.now(),
     name: req?.body?.name,
     amount: 100,
-    redirectUrl: `https://birthday-cake-backend-1.onrender.com/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
+    redirectUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     redirectMode: "POST",
     mobileNumber: "6353839209",
     paymentInstrument: {
@@ -110,14 +114,14 @@ const checkStatus = async (req, res) => {
     .request(options)
     .then(async (response) => {
       if (response.data.success === true) {
-        const url = `https://www.waiwishes.com/${name}/${msg}/${age}/${customUrl}`;
+        const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
         const response = await axios.post(
-          "https://birthday-cake-backend-1.onrender.com/api/create-user",
+          `${backend_URL}/api/create-user`,
           { name, message: msg, age, customUrl }
         );
         return res.redirect(url);
       } else {
-        const url = `https://www.waiwishes.com/`;
+        const url = `${frontend_URL}`;
         return res.redirect(url);
       }
     })
