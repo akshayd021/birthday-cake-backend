@@ -115,7 +115,8 @@ const checkStatus = async (req, res) => {
   axios
     .request(options)
     .then(async (response) => {
-      if (response.data.success === true) {
+      console.log("Response: ", response);
+      if (response?.data?.success === true) {
         const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
         const response = await axios.post(
           `${backend_URL}/api/create-user`,
@@ -128,6 +129,7 @@ const checkStatus = async (req, res) => {
       }
     })
     .catch((error) => {
+      console.log("error getting...");
       console.error(error);
     });
 };
