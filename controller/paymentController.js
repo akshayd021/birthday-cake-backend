@@ -7,12 +7,14 @@ const sha256 = require("sha256");
 // const merchant_id = "PGTESTPAYUAT86";
 // const salt_index = 1;
 // const prod_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay";
+// const status_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status";
 
 // Producttions
 const salt_key = "386318c5-8294-4517-83ae-ebcb2cf18877";
 const merchant_id = "WAIWIONLINE";
 const salt_index = 2;
 const prod_URL = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
+const status_URL = "https://api.phonepe.com/apis/hermes/pg/v1/status";
 
 const newPayment = async (req, res) => {
   const name = req?.body?.name;
@@ -95,7 +97,7 @@ const checkStatus = async (req, res) => {
     salt_index;
   const options = {
     method: "get",
-    url: `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${merchant_id}/${txnId}`,
+    url: `${status_URL}/pg/v1/status/${merchant_id}/${txnId}`,
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
