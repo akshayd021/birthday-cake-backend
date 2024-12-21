@@ -110,6 +110,8 @@ const checkStatus = async (req, res) => {
     },
   };
 
+  console.log("X verify: ", xVerify);
+
   axios
     .request(options)
     .then(async (response) => {
