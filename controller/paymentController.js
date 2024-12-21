@@ -97,7 +97,7 @@ const checkStatus = async (req, res) => {
     salt_index;
   const options = {
     method: "get",
-    url: `${status_URL}/pg/v1/status/${merchant_id}/${txnId}`,
+    url: `${status_URL}/${merchant_id}/${txnId}`,
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
