@@ -12,7 +12,7 @@ const sha256 = require("sha256");
 const salt_key = "386318c5-8294-4517-83ae-ebcb2cf18877";
 const merchant_id = "WAIWIONLINE";
 const salt_index = 2;
-const prod_URL = "https://api.phonepe.com/apis/hermes";
+const prod_URL = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
 
 const newPayment = async (req, res) => {
   const name = req?.body?.name;
