@@ -106,7 +106,7 @@ const checkStatus = async (req, res) => {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
-        "X-MERCHANT-ID": txnId,
+        "X-MERCHANT-ID": merchant_id,
         "X-VERIFY": xVerify,
       },
     };
@@ -116,36 +116,37 @@ const checkStatus = async (req, res) => {
     console.log("Mercent transaction id: ", txnId);
     console.log("Headers:", options);
 
-
-    try {
-      const response = await axios.request(options);
+    axios
+    .request(options)
+    .then(async (response) => {
       console.log("Response123: ", response?.data);
-    } catch (error) {
+      if (response?.data?.success === true) {
+        const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
+        const response = await axios.post(
+          `${backend_URL}/api/create-user`,
+          { name, message: msg, age, customUrl }
+        );
+        return res.redirect(url);
+      } else {
+        const url = `${frontend_URL}`;
+        return res.redirect(url);
+      }
+    })
+    .catch((error) => {
       console.log("error getting...");
       console.error(error);
-    }
+    });
+
+    // try {
+    //   const response = await axios.request(options);
+    //   console.log("Response123: ", response?.data);
+    // } catch (error) {
+    //   console.log("error getting...");
+    //   console.error(error);
+    // }
   }
 
-  // axios
-  //   .request(options)
-  //   .then(async (response) => {
-  //     console.log("Response123: ", response?.data);
-  //     if (response?.data?.success === true) {
-  //       const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
-  //       const response = await axios.post(
-  //         `${backend_URL}/api/create-user`,
-  //         { name, message: msg, age, customUrl }
-  //       );
-  //       return res.redirect(url);
-  //     } else {
-  //       const url = `${frontend_URL}`;
-  //       return res.redirect(url);
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log("error getting...");
-  //     console.error(error);
-  //   });
+  
 };
 
 const checkStat = async (req, res) => {
