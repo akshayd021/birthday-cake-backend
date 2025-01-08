@@ -37,7 +37,7 @@ const newPayment = async (req, res) => {
     merchantUserId: "MUID" + Date.now(),
     name: req?.body?.name,
     amount: 100,
-    // redirectUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
+    redirectUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     redirectMode: "REDIRECT",
     callbackUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     mobileNumber: "6353839209",
