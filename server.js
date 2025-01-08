@@ -32,6 +32,7 @@ const PORT = process.env.PORT || 8000;
 // Use the user routes
 app.use('/api', userRoutes);
 app.use("/api", phonepeRoute);
+app.use("/pay", phonepeRoute);
 
 // Start the server
 app.listen(PORT, () => {

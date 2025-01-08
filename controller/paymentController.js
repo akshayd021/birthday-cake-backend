@@ -39,7 +39,7 @@ const newPayment = async (req, res) => {
     amount: 100,
     redirectUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     redirectMode: "REDIRECT",
-    callbackUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
+    // callbackUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     mobileNumber: "6353839209",
     paymentInstrument: {
       type: "PAY_PAGE",
@@ -98,28 +98,32 @@ const checkStatus = async (req, res) => {
   const { txnId, name, msg, age, customUrl } = req.params;
 
   console.log({ txnId, name, msg, age, customUrl });
+  if (txnId) {
+    const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
+    const options = {
+      method: "get",
+      url: `${status_URL}/${merchant_id}/${txnId}`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        "X-MERCHANT-ID": txnId,
+        "X-VERIFY": xVerify,
+      },
+    };
 
-  const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
-  const options = {
-    method: "get",
-    // url: `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchant_id}/${txnId}`,
-    url: `${status_URL}/${merchant_id}/${txnId}`,
-    headers: {
-      // accept: "application/json",
-      "Content-Type": "application/json",
-      "X-MERCHANT-ID": txnId,
-      "X-VERIFY": xVerify,
-    },
-  };
+    console.log("Constructed URL:", `${status_URL}/${merchant_id}/${txnId}`);
+    console.log("X verify for status: ", xVerify);
+    console.log("Mercent transaction id: ", txnId);
+    console.log("Headers:", options);
 
-  console.log("X verify for status: ", xVerify);
-  console.log("Mercent transaction id: ", txnId);
-  try{
-     const response = await axios.request(options);
-     console.log("Response123: ", response?.data);
-  }catch(error){
-    console.log("error getting...");
+
+    try {
+      const response = await axios.request(options);
+      console.log("Response123: ", response?.data);
+    } catch (error) {
+      console.log("error getting...");
       console.error(error);
+    }
   }
 
   // axios
@@ -144,7 +148,36 @@ const checkStatus = async (req, res) => {
   //   });
 };
 
+const checkStat = async (req, res) => {
+  const { txnId } = req.params;
+  const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
+    const options = {
+      method: "get",
+      url: `${status_URL}/${merchant_id}/${txnId}`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        "X-MERCHANT-ID": txnId,
+        "X-VERIFY": xVerify,
+      },
+    };
+
+    console.log("Constructed URL:", `${status_URL}/${merchant_id}/${txnId}`);
+    console.log("X verify for status: ", xVerify);
+    console.log("Mercent transaction id: ", txnId);
+    console.log("Headers:", options);
+
+    try {
+      const response = await axios.request(options);
+      console.log("Response123: ", response?.data);
+    } catch (error) {
+      console.log("error getting...");
+      console.error(error);
+    }
+}
+
 module.exports = {
   newPayment,
   checkStatus,
+  checkStat
 };
