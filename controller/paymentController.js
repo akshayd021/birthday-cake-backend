@@ -105,7 +105,7 @@ const checkStatus = async (req, res) => {
     // url: `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchant_id}/${txnId}`,
     url: `${status_URL}/${merchant_id}/${txnId}`,
     headers: {
-      accept: "application/json",
+      // accept: "application/json",
       "Content-Type": "application/json",
       "X-MERCHANT-ID": txnId,
       "X-VERIFY": xVerify,
@@ -114,27 +114,34 @@ const checkStatus = async (req, res) => {
 
   console.log("X verify for status: ", xVerify);
   console.log("Mercent transaction id: ", txnId);
-
-  axios
-    .request(options)
-    .then(async (response) => {
-      console.log("Response123: ", response?.data);
-      if (response?.data?.success === true) {
-        const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
-        const response = await axios.post(
-          `${backend_URL}/api/create-user`,
-          { name, message: msg, age, customUrl }
-        );
-        return res.redirect(url);
-      } else {
-        const url = `${frontend_URL}`;
-        return res.redirect(url);
-      }
-    })
-    .catch((error) => {
-      console.log("error getting...");
+  try{
+     const response = await axios.request(options);
+     console.log("Response123: ", response?.data);
+  }catch(error){
+    console.log("error getting...");
       console.error(error);
-    });
+  }
+
+  // axios
+  //   .request(options)
+  //   .then(async (response) => {
+  //     console.log("Response123: ", response?.data);
+  //     if (response?.data?.success === true) {
+  //       const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
+  //       const response = await axios.post(
+  //         `${backend_URL}/api/create-user`,
+  //         { name, message: msg, age, customUrl }
+  //       );
+  //       return res.redirect(url);
+  //     } else {
+  //       const url = `${frontend_URL}`;
+  //       return res.redirect(url);
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log("error getting...");
+  //     console.error(error);
+  //   });
 };
 
 module.exports = {
