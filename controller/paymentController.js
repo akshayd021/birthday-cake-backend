@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const axios = require("axios");
 const sha256 = require("sha256");
 // const { , merchant_id } = require("./secret");
+
 // Testing enviroment
 // const salt_key = "96434309-7796-489d-8924-ab56988a6076";
 // const merchant_id = "PGTESTPAYUAT86";
@@ -37,7 +38,8 @@ const newPayment = async (req, res) => {
     name: req?.body?.name,
     amount: 100,
     redirectUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
-    redirectMode: "POST",
+    redirectMode: "REDIRECT",
+    callbackUrl: `${backend_URL}/api/status/${merchantTransactionId}/${name}/${msg}/${age}/${customUrl}`,
     mobileNumber: "6353839209",
     paymentInstrument: {
       type: "PAY_PAGE",
@@ -55,6 +57,8 @@ const newPayment = async (req, res) => {
   const encodedPayload = bufferObj.toString("base64");
   console.log("Base 64: ", encodedPayload);
   const xVerify = sha256(encodedPayload + "/pg/v1/pay" + salt_key) + "###" + salt_index;
+
+  console.log("Payment x verify: ", xVerify);
 
   const options = {
     method: "POST",
@@ -95,27 +99,26 @@ const checkStatus = async (req, res) => {
 
   console.log({ txnId, name, msg, age, customUrl });
 
-  const xVerify =
-    sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) +
-    "###" +
-    salt_index;
+  const xVerify = sha256(`/pg/v1/status/${merchant_id}/${txnId}` + salt_key) + "###" + salt_index;
   const options = {
     method: "get",
+    // url: `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchant_id}/${txnId}`,
     url: `${status_URL}/${merchant_id}/${txnId}`,
     headers: {
-      accept: "text/plain",
+      accept: "application/json",
       "Content-Type": "application/json",
       "X-MERCHANT-ID": txnId,
       "X-VERIFY": xVerify,
     },
   };
 
-  console.log("X verify: ", xVerify);
+  console.log("X verify for status: ", xVerify);
+  console.log("Mercent transaction id: ", txnId);
 
   axios
     .request(options)
     .then(async (response) => {
-      console.log("Response: ", response);
+      console.log("Response123: ", response?.data);
       if (response?.data?.success === true) {
         const url = `${frontend_URL}/${name}/${msg}/${age}/${customUrl}`;
         const response = await axios.post(
