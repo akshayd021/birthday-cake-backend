@@ -20,7 +20,7 @@ const CreateUser = async (req, res) => {
     const newUser = new User({ name, age, message, customUrl });
     await newUser.save();
 
-    const dummyLink = `https://www.waiwishes.com/user/${
+    const dummyLink = `https://www.waiwishes.com/surprise/${
       customUrl || newUser._id
     }`;
 
